@@ -2,56 +2,136 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>{{ $title }}</title>
+    <title>NekoMang — Главная страница</title>
 
     <link rel="stylesheet"
-          href="{{ asset('css/style.css') }}">
+          href="{{ asset('css/auth.css') }}">
 </head>
 <body>
 
 <header class="header">
-    <div class="container">
-        <a href="{{ route('home') }}" class="logo">
-            Neko<span>Mang</span>
-        </a>
-    </div>
+
+    <a href="{{ route('home') }}" class="logo">
+        NekoMang
+    </a>
+
 </header>
 
-<main class="main">
-    <div class="container">
-        <section class="welcome">
-            <span class="tag">Курсовой проект</span>
+<main class="auth-container">
 
-            <h1>Добро пожаловать в NekoMang!</h1>
+    <section class="auth-card">
 
-            <p>{{ $description }}</p>
+        @if (session('success'))
 
-            <p class="subtitle">
-                Открывай новые истории и читай любимую мангу.
+            <div class="success-message" role="status">
+                {{ session('success') }}
+            </div>
+
+        @endif
+
+        <h1>Добро пожаловать в NekoMang!</h1>
+
+        <p class="subtitle">
+            Информационная система для чтения манги
+        </p>
+
+        @guest
+
+            <p>
+                Вы находитесь на сайте как гость.
             </p>
 
-            <div class="status">
-                Сайт успешно запущен
+            <p class="auth-link">
+                <a href="{{ route('login') }}">
+                    Войти
+                </a>
+            </p>
+
+            <p class="auth-link">
+                <a href="{{ route('register') }}">
+                    Зарегистрироваться
+                </a>
+            </p>
+
+        @endguest
+
+        @auth
+
+            <div class="success-message">
+                Вы авторизованы в системе.
             </div>
 
-            <div class="technology">
-                <span>Laravel 12</span>
-                <span>PHP 8.2</span>
-                <span>MySQL 8.0</span>
-                <span>Blade</span>
-            </div>
-        </section>
-    </div>
+            <p>
+                <strong>Имя пользователя:</strong>
+                {{ auth()->user()->name }}
+            </p>
+
+            <p>
+                <strong>Электронная почта:</strong>
+                {{ auth()->user()->email }}
+            </p>
+
+            <p>
+                <strong>Роль:</strong>
+                {{ auth()->user()->role->name }}
+            </p>
+
+            <p class="auth-link">
+
+                <a href="{{ route('profile.index') }}">
+                    Личный кабинет
+                </a>
+
+            </p>
+
+            @if (auth()->user()->isAdmin())
+
+                <div class="success-message">
+                    Вы вошли как администратор.
+                </div>
+
+                <p class="auth-link">
+
+                    <a href="{{ route('admin.dashboard') }}">
+                        Панель администратора
+                    </a>
+
+                </p>
+
+            @else
+
+                <p>
+                    Вы вошли как читатель.
+                </p>
+
+            @endif
+
+            <form action="{{ route('logout') }}"
+                  method="POST">
+
+                @csrf
+
+                <button type="submit"
+                        class="submit-button">
+
+                    Выйти из аккаунта
+
+                </button>
+
+            </form>
+
+        @endauth
+
+    </section>
+
 </main>
 
 <footer class="footer">
-    <div class="container">
-        <p>&copy; {{ date('Y') }} NekoMang.
-            Курсовой проект.</p>
-    </div>
+    &copy; {{ date('Y') }} NekoMang
 </footer>
 
 </body>
